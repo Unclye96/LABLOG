@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Backtracking</title>
+
+  <link rel="stylesheet" href="styleback.css">
+</head>
+
+<body class="backtracking">
+
+  <div class="page-card">
+
+    <!-- 🔹 TÍTULO -->
+    <div class="title-row">
+
+      <h1>Backtracking</h1>
+
+      <span class="info-icon" tabindex="0">
+        ℹ
+
+        <span class="tooltip">
+
+          <p>
+            El programa permite construir expresiones lógicas y visualizar cómo un algoritmo de Backtracking explora todas las combinaciones posibles de variables booleanas.
+          </p>
+
+          <p>
+            El sistema genera un árbol binario, evalúa cada camino y muestra gráficamente el proceso de exploración, retroceso y búsqueda de soluciones válidas paso a paso.
+          </p>
+
+        </span>
+      </span>
+
+    </div>
+
+    <!-- 🔹 INPUT EXPRESIÓN -->
+    <div class="form-row">
+
+      <input
+        id="expresion"
+        type="text"
+        placeholder="Construye la expresión lógica"
+      >
+
+    </div>
+
+    <!-- 🔹 VARIABLES DETECTADAS -->
+    <div class="output-section">
+
+      <h3>Variables detectadas:</h3>
+
+      <div id="variablesDetectadas" class="output-box">
+        Ninguna
+      </div>
+
+    </div>
+
+    <!-- 🔥 TECLADO LÓGICO -->
+    <div id="teclado">
+
+      <!-- VARIABLES -->
+      <div class="fila" id="variables">
+
+        <button onclick="agregar('A')">A</button>
+
+        <button onclick="agregar('B')">B</button>
+
+        <button onclick="agregar('C')">C</button>
+
+      </div>
+
+      <!-- OPERADORES -->
+      <div class="fila">
+
+        <button onclick="agregar('&&')">
+          AND
+        </button>
+
+        <button onclick="agregar('||')">
+          OR
+        </button>
+
+        <button onclick="agregar('!')">
+          NOT
+        </button>
+
+      </div>
+
+      <!-- PARÉNTESIS -->
+      <div class="fila">
+
+        <button onclick="agregar('(')">
+          (
+        </button>
+
+        <button onclick="agregar(')')">
+          )
+        </button>
+
+      </div>
+
+      <!-- CONTROL -->
+      <div class="fila">
+
+        <button onclick="borrar()">
+          ⌫
+        </button>
+
+        <button onclick="limpiar()">
+          Clear
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- 🔹 BOTONES -->
+    <div class="button-row">
+
+      <button id="analizar">
+        Analizar
+      </button>
+
+      <button id="paso" disabled>
+        Siguiente paso
+      </button>
+
+    </div>
+
+    <!-- 🔹 PASO ACTUAL -->
+    <div class="output-section">
+
+      <h3>Paso actual:</h3>
+
+      <div id="pasoActual" class="output-box"></div>
+
+    </div>
+
+    <!-- 🔹 HISTORIAL -->
+    <div class="output-section">
+
+      <h3>Historial:</h3>
+
+      <div id="historial" class="output-box"></div>
+
+    </div>
+
+    <!-- 🔹 FOOTER -->
+    <div class="footer-row">
+
+      <button id="volver">
+        Volver
+      </button>
+
+      <button id="dibujar">
+         Dibujar árbol
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- 🔥 JS SIEMPRE AL FINAL -->
+  <script src="backtracking.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "mi-app-electron",
+  "version": "1.0.0",
+  "description": "App de lógica con interfaz wow",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^30.0.0"
+  }
+}

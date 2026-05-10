@@ -1,0 +1,110 @@
+body {
+  margin: 0;
+  font-family: Arial;
+  color: black;
+  overflow: hidden;
+}
+body.inicio {
+ background-color: white;
+}
+/* Pantalla módulos (azul bebé) */
+body.modulos {
+  background: linear-gradient(135deg, #f2f4f8, #e6ebf2);
+}
+
+/* Pantalla de bienvenida */
+#welcome {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 1s ease;
+}
+
+#welcome img {
+  width: 750px;
+  margin-bottom: 20px;
+}
+
+#welcome button {
+  padding: 10px 25px;
+  font-size: 18px;
+  background: #1E3A5F;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  color: #FFFFFF;
+}
+/* App oculta */
+.hidden {
+  display: none;
+}
+/* Botones */
+#modulos button{
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  padding: 12px 25px;
+  font-size: 16px;
+  background: #1E3A5F;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #FFFFFF;
+  width: 200px;
+  transition: all 0.25s ease;
+}
+
+/* Hover (esto le da vida) */
+#modulos button:hover{
+  background: #2E5A8A;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+/* Contenedor principal */
+#modulos {
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  /* 🔥 CAMBIOS IMPORTANTES */
+  border: none; /* quitamos borde */
+  background-color: #FFFFFF; /* fondo limpio */
+  
+  padding: 30px;
+  width: 400px;
+  margin: 120px auto 0;
+
+  border-radius: 16px;
+
+  /* sombra más suave y moderna */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* Título */
+#modulos h1 {
+  color: #1E3A5F; /* mismo azul → coherencia */
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+/* Contenedor de botones */
+#contenedor_modulos {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* más espacio */
+  align-items: center;
+}
+#modulos button:active{
+  transform: scale(0.97);
+}
+

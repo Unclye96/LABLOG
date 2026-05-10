@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LABLOG</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="inicio">
+
+  <!-- 🟣 Pantalla de inicio -->
+  <div id="welcome">
+    <img src="../LABLOG.png" alt="Logo">
+    <button id="startBtn">Iniciar</button>
+  </div>
+
+  <!-- 🔵 App principal -->
+  <div id="modulos" class="hidden">
+    <div>
+      <h1>MODULOS</h1>
+    </div>
+    <container id ="contenedor_modulos"> 
+      <button id="ExpresioneS">EXPRESIONES</button>
+      <p><button id="Unificacion">UNIFICACIÓN</button></p>
+      <p><button id="backtracking">BACKTRACKING</button></p>
+    </container>
+  </div>
+
+  <!-- 🟢 BACKTRACKING -->
+<div id="pantallaBacktracking" class="hidden">
+  <h2>BACKTRACKING</h2>
+
+  <input id="lista" placeholder="Ej: 2,3,5">
+  <input id="objetivo" placeholder="Objetivo">
+
+  <button id="btnAnalizar">Analizar</button>
+  <button id="btnPaso">Siguiente paso</button>
+
+  <div id="pasoActual"></div>
+  <div id="historial"></div>
+
+  <button id="volver">⬅ Volver</button>
+</div>
+  <script src="app.js"></script>
+</body>
+</html>

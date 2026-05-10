@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>Árbol</title>
+
+  <style>
+
+    body {
+
+      margin: 0;
+
+      font-family: Arial;
+
+      background: #f4f4f4;
+
+      overflow: hidden;
+    }
+
+    h2 {
+
+      margin: 0;
+
+      padding: 15px;
+
+      background: white;
+
+      border-bottom: 1px solid #ccc;
+    }
+
+    /* 🔥 CONTENEDOR CON SCROLL */
+
+    #contenedor {
+
+      width: 100vw;
+
+      height: calc(100vh - 60px);
+
+      overflow: auto;
+
+      background: #e9ecef;
+
+      padding: 20px;
+
+      box-sizing: border-box;
+    }
+
+    canvas {
+
+      background: white;
+
+      border-radius: 12px;
+
+      box-shadow:
+        0 0 10px rgba(0,0,0,0.2);
+
+      border: 1px solid #ccc;
+    }
+
+    #controles{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      margin: 0 0 15px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 14px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+      max-width: min(420px, calc(100% - 40px));
+    }
+
+    #controles button{
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: #1e3a5f;
+      color: white;
+      font-weight: 600;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .tooltip-icon {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #1e3a5f;
+      color: white;
+      font-size: 14px;
+      cursor: default;
+      user-select: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .tooltip-icon:focus {
+      outline: 2px solid #2e5a8a;
+      outline-offset: 2px;
+    }
+
+    .tooltip {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-6px);
+      background: #1e3a5f;
+      color: #ffffff;
+      padding: 10px 14px;
+      border-radius: 12px;
+      white-space: normal;
+      text-align: left;
+      width: max-content;
+      max-width: 320px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none;
+      z-index: 10;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .tooltip p {
+      margin: 0 0 8px;
+    }
+
+    .tooltip p:last-child {
+      margin-bottom: 0;
+    }
+
+    .tooltip-icon:hover .tooltip,
+    .tooltip-icon:focus .tooltip {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #controles button:hover {
+      background: #2e5a8a;
+      transform: translateY(-1px);
+    }
+
+
+  </style>
+
+</head>
+
+<body>
+
+  <h2>
+   Árbol de Backtracking
+  </h2>
+
+  <div id="controles">
+
+    <button id="btnPlay">
+      ▶ Play
+    </button>
+
+    <button id="btnPause">
+      ⏸ Pause
+    </button>
+
+    <button id="btnReset">
+      🔄 Reiniciar
+    </button>
+
+    <span class="tooltip-icon" tabindex="0">
+      ?
+      <span class="tooltip">
+        <p>
+          Los colores del árbol te ayudarán a identificar el estado de cada nodo durante la ejecución del algoritmo de Backtracking.
+        </p>
+        <p>
+          El color azul representa nodos normales aún no explorados.
+        </p>
+        <p>
+          El amarillo indica el nodo que el algoritmo está explorando actualmente.
+        </p>
+        <p>
+          El verde representa una solución válida que cumple la expresión lógica.
+        </p>
+        <p>
+          El rojo indica un camino inválido que fue descartado.
+        </p>
+        <p>
+          El naranja representa el retroceso del algoritmo para probar nuevas posibilidades.
+        </p>
+      </span>
+    </span>
+
+  </div>
+
+  <div id="contenedor">
+
+    <canvas
+      id="canvas"
+      width="3000"
+      height="1600">
+    </canvas>
+
+  </div>
+
+  <script src="arbol.js"></script>
+
+</body>
+</html>
