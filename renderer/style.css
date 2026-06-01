@@ -6,9 +6,13 @@ body {
   min-height: 100vh;
 }
 
-body.inicio,
+body.inicio {
+  background-color: white;
+}
+
+/* Pantalla módulos (azul bebé) */
 body.modulos {
-  background: #ffffff url("../fondo.png") center center / cover no-repeat fixed;
+  background: linear-gradient(135deg, #f2f4f8, #e6ebf2);
 }
 
 /* Pantalla de bienvenida */
