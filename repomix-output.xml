@@ -1,0 +1,2568 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+fondo.png
+LABLOG.png
+main.js
+package.json
+renderer/algoritmoBacktracking.js
+renderer/app.js
+renderer/arbol.html
+renderer/arbol.js
+renderer/backtracking.html
+renderer/backtracking.js
+renderer/expresiones.html
+renderer/index.html
+renderer/modulos.js
+renderer/style.css
+renderer/styleback.css
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="main.js">
+const { app, BrowserWindow, ipcMain } = require('electron');
+
+let mainWindow;
+
+function createWindow() {
+
+  mainWindow = new BrowserWindow({
+    width: 900,
+    height: 700,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+    }
+  });
+
+  mainWindow.loadFile('renderer/index.html');
+
+}
+
+ipcMain.on("abrir-arbol", (event, data) => {
+
+  let treeWindow = new BrowserWindow({
+    width: 1000,
+    height: 700,
+
+    parent: BrowserWindow.getFocusedWindow(),
+
+    modal: true,
+
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+    }
+  });
+
+  treeWindow.loadFile("renderer/arbol.html");
+
+  treeWindow.webContents.on("did-finish-load", () => {
+
+    treeWindow.webContents.send("datos-arbol", data);
+
+  });
+
+});
+
+app.whenReady().then(createWindow);
+  // mainWindow.webContents.openDevTools();
+
+/*ipcMain.on("enviar-arbol", (event, eventos) => {
+  ventanaArbol.webContents.send("datos-arbol", eventos);
+});*/
+</file>
+
+<file path="package.json">
+{
+  "name": "mi-app-electron",
+  "version": "1.0.0",
+  "description": "App de lógica con interfaz wow",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^30.0.0"
+  }
+}
+</file>
+
+<file path="renderer/algoritmoBacktracking.js">
+function backtracking(lista, objetivo) {
+  const pasos = [];
+  const eventos = [];
+  const soluciones = [];
+
+  let id = 0;
+
+  function explorar(camino, suma, parentId = null) {
+    const nodoId = id++;
+
+    // 🔹 registrar nodo
+    eventos.push({
+      tipo: "nodo",
+      id: nodoId,
+      parent: parentId,
+      valor: camino[camino.length - 1] || "Inicio",
+      suma,
+      camino: [...camino]
+    });
+
+    pasos.push(`➡️ Explorando: [${camino.join(",")}]`);
+
+    if (suma === objetivo) {
+      eventos.push({ tipo: "solucion", id: nodoId });
+      pasos.push(`✅ Solución: [${camino.join(",")}]`);
+      soluciones.push([...camino]);
+      return;
+    }
+
+    if (suma > objetivo) {
+      eventos.push({ tipo: "fallo", id: nodoId });
+      pasos.push(`❌ Se pasa`);
+      return;
+    }
+
+    for (let num of lista) {
+      camino.push(num);
+
+      explorar(camino, suma + num, nodoId);
+
+      eventos.push({ tipo: "backtrack", id: nodoId });
+      pasos.push(`↩️ Retroceder`);
+
+      camino.pop();
+    }
+  }
+
+  explorar([], 0);
+
+  return { pasos, eventos, soluciones };
+}
+
+module.exports = backtracking;
+</file>
+
+<file path="renderer/app.js">
+const startBtn = document.getElementById("startBtn");
+const welcome = document.getElementById("welcome");
+const modulos = document.getElementById("modulos");
+const btnBacktracking = document.getElementById("backtracking");
+
+btnBacktracking.addEventListener("click", () => {
+  window.location.href = "backtracking.html";
+});
+
+
+
+const showModules = () => {
+  welcome.style.display = "none";
+  modulos.classList.remove("hidden");
+  document.body.classList.remove("inicio");
+  document.body.classList.add("modulos");
+};
+
+if (window.location.hash === "#modulos") {
+  showModules();
+}
+
+startBtn.addEventListener("click", () => {
+  welcome.classList.add("fade-out");
+
+  setTimeout(() => {
+    showModules();
+  }, 1000);
+});
+
+const btnDibujar = document.getElementById("dibujar");
+</file>
+
+<file path="renderer/arbol.html">
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>Árbol</title>
+
+  <style>
+
+    body {
+
+      margin: 0;
+
+      font-family: Arial;
+
+      background: #f4f4f4;
+
+      overflow: hidden;
+    }
+
+    h2 {
+
+      margin: 0;
+
+      padding: 15px;
+
+      background: white;
+
+      border-bottom: 1px solid #ccc;
+    }
+
+    /* 🔥 CONTENEDOR CON SCROLL */
+
+    #contenedor {
+
+      width: 100vw;
+
+      height: calc(100vh - 60px);
+
+      overflow: auto;
+
+      background: #e9ecef;
+
+      padding: 20px;
+
+      box-sizing: border-box;
+    }
+
+    canvas {
+
+      background: white;
+
+      border-radius: 12px;
+
+      box-shadow:
+        0 0 10px rgba(0,0,0,0.2);
+
+      border: 1px solid #ccc;
+    }
+
+    #controles{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      margin: 0 0 15px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 14px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+      max-width: min(420px, calc(100% - 40px));
+    }
+
+    #controles button{
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: #1e3a5f;
+      color: white;
+      font-weight: 600;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .tooltip-icon {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #1e3a5f;
+      color: white;
+      font-size: 14px;
+      cursor: default;
+      user-select: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .tooltip-icon:focus {
+      outline: 2px solid #2e5a8a;
+      outline-offset: 2px;
+    }
+
+    .tooltip {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-6px);
+      background: #1e3a5f;
+      color: #ffffff;
+      padding: 10px 14px;
+      border-radius: 12px;
+      white-space: normal;
+      text-align: left;
+      width: max-content;
+      max-width: 320px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none;
+      z-index: 10;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .tooltip p {
+      margin: 0 0 8px;
+    }
+
+    .tooltip p:last-child {
+      margin-bottom: 0;
+    }
+
+    .tooltip-icon:hover .tooltip,
+    .tooltip-icon:focus .tooltip {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #controles button:hover {
+      background: #2e5a8a;
+      transform: translateY(-1px);
+    }
+
+
+  </style>
+
+</head>
+
+<body>
+
+  <h2>
+   Árbol de Backtracking
+  </h2>
+
+  <div id="controles">
+
+    <button id="btnPlay">
+      ▶ Play
+    </button>
+
+    <button id="btnPause">
+      ⏸ Pause
+    </button>
+
+    <button id="btnReset">
+      🔄 Reiniciar
+    </button>
+
+    <span class="tooltip-icon" tabindex="0">
+      ?
+      <span class="tooltip">
+        <p>
+          Los colores del árbol te ayudarán a identificar el estado de cada nodo durante la ejecución del algoritmo de Backtracking.
+        </p>
+        <p>
+          El color azul representa nodos normales aún no explorados.
+        </p>
+        <p>
+          El amarillo indica el nodo que el algoritmo está explorando actualmente.
+        </p>
+        <p>
+          El verde representa una solución válida que cumple la expresión lógica.
+        </p>
+        <p>
+          El rojo indica un camino inválido que fue descartado.
+        </p>
+        <p>
+          El naranja representa el retroceso del algoritmo para probar nuevas posibilidades.
+        </p>
+      </span>
+    </span>
+
+  </div>
+
+  <div id="contenedor">
+
+    <canvas
+      id="canvas"
+      width="3000"
+      height="1600">
+    </canvas>
+
+  </div>
+
+  <script src="arbol.js"></script>
+
+</body>
+</html>
+</file>
+
+<file path="renderer/arbol.js">
+const { ipcRenderer } = require("electron");
+
+// =====================================================
+// 🔹 CANVAS
+// =====================================================
+
+const canvas =
+  document.getElementById("canvas");
+
+const ctx =
+  canvas.getContext("2d");
+const btnPlay =
+  document.getElementById("btnPlay");
+
+const btnPause =
+  document.getElementById("btnPause");
+
+const btnReset =
+  document.getElementById("btnReset");
+
+// =====================================================
+// 🔹 VARIABLES GLOBALES
+// =====================================================
+
+let nodos = {};
+
+let raiz = null;
+
+let contadorX = 0;
+// 🔥 ZOOM Y DESPLAZAMIENTO
+let escala = 1;
+
+let offsetX = 0;
+let offsetY = 0;
+
+let arrastrando = false;
+
+let inicioX = 0;
+let inicioY = 0;
+// =====================================================
+// 🔥 CONTROL DE ANIMACIÓN
+// =====================================================
+
+let pausado = false;
+
+let reiniciado = false;
+
+let timeoutActual = null;
+// =====================================================
+// 🔥 CONFIGURACIÓN DEL CANVAS
+// =====================================================
+
+ctx.font = "14px Arial";
+
+ctx.textAlign = "center";
+
+ctx.textBaseline = "middle";
+
+// =====================================================
+// 🔥 RECIBIR DATOS
+// =====================================================
+
+ipcRenderer.on(
+  "datos-arbol",
+  (event, eventos) => {
+
+    construirArbol(eventos);
+
+    contadorX = 0;
+
+    asignarPosiciones(raiz);
+
+    redrawTree();
+
+    // 🔥 iniciar animación
+    setTimeout(() => {
+
+      animarDFS(raiz);
+
+    }, 500);
+  }
+);
+
+// =====================================================
+// 🔥 CONSTRUIR ÁRBOL
+// =====================================================
+
+function construirArbol(eventos) {
+
+  nodos = {};
+
+  // 🔹 Crear nodos
+  eventos.forEach(ev => {
+
+    if (
+      ev.tipo === "nodo" ||
+      ev.tipo === "resultado"
+    ) {
+
+      nodos[ev.id] = {
+
+        ...ev,
+
+        hijos: [],
+
+        estadoAnimacion:
+          "normal",
+
+        colapsado: false
+      };
+    }
+  });
+
+  // 🔹 Conectar nodos
+  eventos.forEach(ev => {
+
+    if (
+      (ev.tipo === "nodo" ||
+      ev.tipo === "resultado")
+      &&
+      ev.parent !== null
+    ) {
+
+      const padre =
+        nodos[ev.parent];
+
+      const hijo =
+        nodos[ev.id];
+
+      hijo.padre = padre;
+
+      padre.hijos.push(hijo);
+    }
+  });
+
+  // 🔹 Buscar raíz
+  raiz =
+    Object.values(nodos)
+      .find(
+        n => n.parent === null
+      );
+}
+
+// =====================================================
+// 🔥 POSICIONES DEL ÁRBOL
+// =====================================================
+
+function asignarPosiciones(
+  nodo,
+  nivel = 0
+) {
+
+  if (!nodo) return;
+
+  nodo.y =
+    nivel * 100 + 80;
+
+  // 🔹 Nodo hoja
+  if (nodo.hijos.length === 0) {
+
+    nodo.x =
+      contadorX * 140 + 100;
+
+    contadorX++;
+  }
+
+  // 🔹 Nodo interno
+  else {
+
+    nodo.hijos.forEach(hijo => {
+
+      asignarPosiciones(
+        hijo,
+        nivel + 1
+      );
+    });
+
+    const primer =
+      nodo.hijos[0];
+
+    const ultimo =
+      nodo.hijos[
+        nodo.hijos.length - 1
+      ];
+
+    nodo.x =
+      (primer.x + ultimo.x) / 2;
+  }
+}
+
+// =====================================================
+// 🔥 REDIBUJAR TODO
+// =====================================================
+
+function redrawTree() {
+
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  // 🔥 guardar estado
+  ctx.save();
+
+  // 🔥 mover canvas
+  ctx.translate(
+    offsetX,
+    offsetY
+  );
+
+  // 🔥 zoom
+  ctx.scale(
+    escala,
+    escala
+  );
+
+  if (raiz) {
+
+    dibujarArbol(raiz);
+  }
+
+  // 🔥 restaurar estado
+  ctx.restore();
+}
+
+// =====================================================
+// 🔥 DIBUJAR ÁRBOL
+// =====================================================
+
+function dibujarArbol(nodo) {
+
+  if (!nodo) return;
+
+  // 🔥 SI ESTÁ COLAPSADO
+  // NO DIBUJAR HIJOS
+  if (!nodo.colapsado) {
+
+    nodo.hijos.forEach(hijo => {
+
+      dibujarLinea(
+        nodo,
+        hijo
+      );
+
+      dibujarArbol(hijo);
+    });
+  }
+
+  // 🔹 Dibujar nodo
+  dibujarNodo(nodo);
+}
+
+// =====================================================
+// 🔥 DIBUJAR NODO
+// =====================================================
+
+function dibujarNodo(nodo) {
+
+  ctx.beginPath();
+
+  ctx.arc(
+    nodo.x,
+    nodo.y,
+    30,
+    0,
+    Math.PI * 2
+  );
+
+  // =================================================
+  // 🔥 COLORES
+  // =================================================
+
+  // 🔹 Solución
+  if (nodo.estado === "solucion") {
+
+    ctx.fillStyle = "#4CAF50";
+  }
+
+  // 🔹 Fallo
+  else if (
+    nodo.estado === "fallo"
+  ) {
+
+    ctx.fillStyle = "#F44336";
+  }
+
+  // 🔹 Visitando
+  else if (
+    nodo.estadoAnimacion ===
+    "visitando"
+  ) {
+
+    ctx.fillStyle = "#FFD54F";
+  }
+
+  // 🔹 Retroceso
+  else if (
+    nodo.estadoAnimacion ===
+    "retroceso"
+  ) {
+
+    ctx.fillStyle = "#FF9800";
+  }
+
+  // 🔹 Normal
+  else {
+
+    ctx.fillStyle = "#64B5F6";
+  }
+
+  ctx.fill();
+
+  ctx.strokeStyle = "#222";
+
+  ctx.lineWidth = 2;
+
+  ctx.stroke();
+
+  // 🔹 Texto
+  ctx.fillStyle = "black";
+
+  ctx.font = "13px Arial";
+
+  let texto = nodo.valor;
+
+// 🔥 indicador visual
+if (nodo.colapsado) {
+
+  texto += " [+]";
+}
+
+ctx.fillText(
+  texto,
+  nodo.x,
+  nodo.y
+);
+}
+
+// =====================================================
+// 🔥 DIBUJAR LÍNEA
+// =====================================================
+
+function dibujarLinea(
+  padre,
+  hijo
+) {
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    padre.x,
+    padre.y + 30
+  );
+
+  ctx.lineTo(
+    hijo.x,
+    hijo.y - 30
+  );
+
+  ctx.strokeStyle = "#555";
+
+  ctx.lineWidth = 2;
+
+  ctx.stroke();
+}
+
+// =====================================================
+// 🔥 ANIMACIÓN DFS
+// =====================================================
+
+function animarDFS(nodo) {
+
+  if (!nodo) return;
+
+  // 🔥 pausa
+  if (pausado) {
+
+    timeoutActual = setTimeout(() => {
+
+      animarDFS(nodo);
+
+    }, 200);
+
+    return;
+  }
+
+  // 🔹 marcar visitando
+  nodo.estadoAnimacion =
+    "visitando";
+
+  redrawTree();
+
+  timeoutActual = setTimeout(() => {
+
+    recorrerHijos(
+      nodo,
+      0
+    );
+
+  }, 700);
+}
+
+// =====================================================
+// 🔥 RECORRER HIJOS
+// =====================================================
+function recorrerHijos(
+  nodo,
+  index
+) {
+
+  // 🔥 pausa
+  if (pausado) {
+
+    timeoutActual = setTimeout(() => {
+
+      recorrerHijos(
+        nodo,
+        index
+      );
+
+    }, 200);
+
+    return;
+  }
+
+  // 🔹 terminó hijos
+  if (
+    index >= nodo.hijos.length
+  ) {
+
+    nodo.estadoAnimacion =
+      "retroceso";
+
+    redrawTree();
+
+    return;
+  }
+
+  const hijo =
+    nodo.hijos[index];
+
+  timeoutActual = setTimeout(() => {
+
+    animarDFS(hijo);
+
+    timeoutActual = setTimeout(() => {
+
+      recorrerHijos(
+        nodo,
+        index + 1
+      );
+
+    }, 1200);
+
+  }, 700);
+}
+// =====================================================
+// 🔥 CLICK EN NODOS
+// =====================================================
+
+canvas.addEventListener(
+  "click",
+  (e) => {
+
+    const nodo =
+      detectarNodoClick(e);
+
+    if (!nodo) return;
+    // 🔥 alternar colapso
+nodo.colapsado =
+  !nodo.colapsado;
+
+redrawTree();
+    const camino =
+      obtenerCamino(nodo);
+
+    resaltarCamino(camino);
+
+    mostrarInfoNodo(nodo);
+  }
+);
+
+// =====================================================
+// 🔥 DETECTAR CLICK
+// =====================================================
+
+function detectarNodoClick(e) {
+
+  const rect =
+    canvas.getBoundingClientRect();
+
+  const x =
+  (e.clientX - rect.left - offsetX)
+  / escala;
+
+  const y =
+  (e.clientY - rect.top - offsetY)
+  / escala;
+
+  for (let id in nodos) {
+
+    const nodo =
+      nodos[id];
+
+    const distancia =
+      Math.sqrt(
+
+        (x - nodo.x) ** 2 +
+
+        (y - nodo.y) ** 2
+      );
+
+    if (distancia < 30) {
+
+      return nodo;
+    }
+  }
+
+  return null;
+}
+
+// =====================================================
+// 🔥 OBTENER CAMINO
+// =====================================================
+
+function obtenerCamino(nodo) {
+
+  let camino = [];
+
+  while (nodo) {
+
+    camino.unshift(nodo);
+
+    nodo = nodo.padre;
+  }
+
+  return camino;
+}
+
+// =====================================================
+// 🔥 RESALTAR CAMINO
+// =====================================================
+
+function resaltarCamino(camino) {
+
+  redrawTree();
+
+  camino.forEach(nodo => {
+
+    ctx.beginPath();
+
+    ctx.arc(
+      nodo.x,
+      nodo.y,
+      38,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.strokeStyle =
+      "#FFEB3B";
+
+    ctx.lineWidth = 5;
+
+    ctx.stroke();
+  });
+}
+
+// =====================================================
+// 🔥 MOSTRAR INFO DEL NODO
+// =====================================================
+
+function mostrarInfoNodo(nodo) {
+
+  let panel =
+    document.getElementById(
+      "infoNodo"
+    );
+
+  // 🔹 Crear panel si no existe
+  if (!panel) {
+
+    panel =
+      document.createElement(
+        "div"
+      );
+
+    panel.id = "infoNodo";
+
+    panel.style.position =
+      "absolute";
+
+    panel.style.top = "10px";
+
+    panel.style.right = "10px";
+
+    panel.style.width = "320px";
+
+    panel.style.background =
+      "white";
+
+    panel.style.padding =
+      "12px";
+
+    panel.style.borderRadius =
+      "12px";
+
+    panel.style.boxShadow =
+      "0 0 10px rgba(0,0,0,0.3)";
+
+    panel.style.fontFamily =
+      "Arial";
+
+    panel.style.zIndex =
+      "1000";
+
+    document.body.appendChild(
+      panel
+    );
+  }
+
+  panel.innerHTML = `
+
+    <h3>
+      Información del nodo
+    </h3>
+
+    <p>
+      <strong>Valor:</strong><br>
+      ${nodo.valor}
+    </p>
+
+    <p>
+      <strong>Camino:</strong><br>
+      ${
+        nodo.camino
+        ? nodo.camino.join(" → ")
+        : "Sin camino"
+      }
+    </p>
+
+    <p>
+      <strong>Expresión evaluada:</strong><br>
+      ${
+        nodo.expresionEvaluada
+        || "N/A"
+      }
+    </p>
+    <p>
+  <strong>
+    Evaluación paso a paso:
+  </strong>
+</p>
+
+<div style="
+  background:#f5f5f5;
+  padding:8px;
+  border-radius:8px;
+">
+
+  ${
+    nodo.pasosEvaluacion
+    ? nodo.pasosEvaluacion
+        .map(
+          p => `<p>${p}</p>`
+        )
+        .join("")
+    : "N/A"
+  }
+
+</div>
+  `;
+}
+// =====================================================
+// 🔥 ZOOM CON RUEDA
+// =====================================================
+
+canvas.addEventListener(
+  "wheel",
+  (e) => {
+
+    e.preventDefault();
+
+    // 🔹 zoom in/out
+    if (e.deltaY < 0) {
+
+      escala += 0.1;
+
+    } else {
+
+      escala -= 0.1;
+    }
+
+    // 🔹 límites
+    escala = Math.max(
+      0.3,
+      Math.min(escala, 3)
+    );
+
+    redrawTree();
+  }
+);
+// =====================================================
+// 🔥 INICIAR ARRASTRE
+// =====================================================
+
+canvas.addEventListener(
+  "mousedown",
+  (e) => {
+
+    arrastrando = true;
+
+    inicioX =
+      e.clientX - offsetX;
+
+    inicioY =
+      e.clientY - offsetY;
+  }
+);
+
+// =====================================================
+// 🔥 MOVER
+// =====================================================
+
+canvas.addEventListener(
+  "mousemove",
+  (e) => {
+
+    if (!arrastrando) return;
+
+    offsetX =
+      e.clientX - inicioX;
+
+    offsetY =
+      e.clientY - inicioY;
+
+    redrawTree();
+  }
+);
+
+// =====================================================
+// 🔥 SOLTAR
+// =====================================================
+
+canvas.addEventListener(
+  "mouseup",
+  () => {
+
+    arrastrando = false;
+  }
+);
+
+// =====================================================
+// 🔥 SALIR DEL CANVAS
+// =====================================================
+
+canvas.addEventListener(
+  "mouseleave",
+  () => {
+
+    arrastrando = false;
+  }
+);
+btnPlay.addEventListener(
+  "click",
+  () => {
+
+    pausado = false;
+  }
+);
+btnPause.addEventListener(
+  "click",
+  () => {
+
+    pausado = true;
+  }
+);
+btnReset.addEventListener(
+  "click",
+  () => {
+
+    reiniciado = true;
+
+    clearTimeout(timeoutActual);
+
+    // 🔹 reset estados
+    for (let id in nodos) {
+
+      nodos[id].estadoAnimacion =
+        "normal";
+    }
+
+    redrawTree();
+
+    // 🔹 reiniciar flags
+    pausado = false;
+
+    reiniciado = false;
+
+    // 🔹 reiniciar animación
+    setTimeout(() => {
+
+      animarDFS(raiz);
+
+    }, 500);
+  }
+);
+</file>
+
+<file path="renderer/backtracking.html">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Backtracking</title>
+
+  <link rel="stylesheet" href="styleback.css">
+</head>
+
+<body class="backtracking">
+
+  <div class="page-card">
+
+    <!-- 🔹 TÍTULO -->
+    <div class="title-row">
+
+      <h1>Backtracking</h1>
+
+      <span class="info-icon" tabindex="0">
+        ℹ
+
+        <span class="tooltip">
+
+          <p>
+            El programa permite construir expresiones lógicas y visualizar cómo un algoritmo de Backtracking explora todas las combinaciones posibles de variables booleanas.
+          </p>
+
+          <p>
+            El sistema genera un árbol binario, evalúa cada camino y muestra gráficamente el proceso de exploración, retroceso y búsqueda de soluciones válidas paso a paso.
+          </p>
+
+        </span>
+      </span>
+
+    </div>
+
+    <!-- 🔹 INPUT EXPRESIÓN -->
+    <div class="form-row">
+
+      <input
+        id="expresion"
+        type="text"
+        placeholder="Construye la expresión lógica"
+      >
+
+    </div>
+
+    <!-- 🔹 VARIABLES DETECTADAS -->
+    <div class="output-section">
+
+      <h3>Variables detectadas:</h3>
+
+      <div id="variablesDetectadas" class="output-box">
+        Ninguna
+      </div>
+
+    </div>
+
+    <!-- 🔥 TECLADO LÓGICO -->
+    <div id="teclado">
+
+      <!-- VARIABLES -->
+      <div class="fila" id="variables">
+
+        <button onclick="agregar('A')">A</button>
+
+        <button onclick="agregar('B')">B</button>
+
+        <button onclick="agregar('C')">C</button>
+
+      </div>
+
+      <!-- OPERADORES -->
+      <div class="fila">
+
+        <button onclick="agregar('&&')">
+          AND
+        </button>
+
+        <button onclick="agregar('||')">
+          OR
+        </button>
+
+        <button onclick="agregar('!')">
+          NOT
+        </button>
+
+      </div>
+
+      <!-- PARÉNTESIS -->
+      <div class="fila">
+
+        <button onclick="agregar('(')">
+          (
+        </button>
+
+        <button onclick="agregar(')')">
+          )
+        </button>
+
+      </div>
+
+      <!-- CONTROL -->
+      <div class="fila">
+
+        <button onclick="borrar()">
+          ⌫
+        </button>
+
+        <button onclick="limpiar()">
+          Clear
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- 🔹 BOTONES -->
+    <div class="button-row">
+
+      <button id="analizar">
+        Analizar
+      </button>
+
+      <button id="paso" disabled>
+        Siguiente paso
+      </button>
+
+    </div>
+
+    <!-- 🔹 PASO ACTUAL -->
+    <div class="output-section">
+
+      <h3>Paso actual:</h3>
+
+      <div id="pasoActual" class="output-box"></div>
+
+    </div>
+
+    <!-- 🔹 HISTORIAL -->
+    <div class="output-section">
+
+      <h3>Historial:</h3>
+
+      <div id="historial" class="output-box"></div>
+
+    </div>
+
+    <!-- 🔹 FOOTER -->
+    <div class="footer-row">
+
+      <button id="volver">
+        Volver
+      </button>
+
+      <button id="dibujar">
+         Dibujar árbol
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- 🔥 JS SIEMPRE AL FINAL -->
+  <script src="backtracking.js"></script>
+
+</body>
+</html>
+</file>
+
+<file path="renderer/backtracking.js">
+const { ipcRenderer } = require("electron");
+
+// =====================================================
+// 🔹 ELEMENTOS DEL DOM
+// =====================================================
+
+const btnAnalizar =
+  document.getElementById("analizar");
+
+const btnPaso =
+  document.getElementById("paso");
+
+const btnVolver =
+  document.getElementById("volver");
+
+const btnDibujar =
+  document.getElementById("dibujar");
+
+const pasoActualDiv =
+  document.getElementById("pasoActual");
+
+const historialDiv =
+  document.getElementById("historial");
+
+const variablesDetectadasDiv =
+  document.getElementById(
+    "variablesDetectadas"
+  );
+
+// =====================================================
+// 🔹 VARIABLES GLOBALES
+// =====================================================
+
+let input;
+
+let eventosGlobal = [];
+let pasos = [];
+let indicePaso = 0;
+// =====================================================
+// 🔥 CUANDO CARGA LA VENTANA
+// =====================================================
+
+window.onload = () => {
+
+  input =
+    document.getElementById(
+      "expresion"
+    );
+    input.addEventListener(
+  "input",
+  () => {
+
+    input.value =
+      input.value.toUpperCase();
+  }
+);
+  // 🔹 Variables base
+  actualizarBotones([
+    "A",
+    "B",
+    "C"
+  ]);
+
+  // 🔹 Iniciar con siguiente paso deshabilitado
+  btnPaso.disabled = true;
+};
+
+// =====================================================
+// 🔥 TECLADO LÓGICO
+// =====================================================
+
+function agregar(valor) {
+
+  input.value += valor;
+}
+
+function borrar() {
+
+  input.value =
+    input.value.slice(0, -1);
+}
+
+function limpiar() {
+
+  input.value = "";
+
+  historialDiv.innerHTML = "";
+
+  pasoActualDiv.innerText = "";
+
+  variablesDetectadasDiv.innerText =
+    "Ninguna";
+
+  pasos = [];
+  indicePaso = 0;
+  btnPaso.disabled = true;
+
+  actualizarBotones([
+    "A",
+    "B",
+    "C"
+  ]);
+}
+
+// =====================================================
+// 🔥 ANALIZAR
+// =====================================================
+
+btnAnalizar.addEventListener(
+  "click",
+  () => {
+    pasos = [];
+indicePaso = 0;
+
+historialDiv.innerHTML = "";
+    // 🔹 Obtener expresión
+    const expresion =
+      input.value.trim();
+
+    // =================================================
+    // 🔹 VALIDACIONES
+    // =================================================
+
+    if (!expresion) {
+
+      alert(
+        "Escribe una expresión lógica"
+      );
+
+      return;
+    }
+
+    const error =
+  validarExpresion(expresion);
+
+if (error) {
+
+  alert(error);
+
+  return;
+}
+
+    // =================================================
+    // 🔥 DETECTAR VARIABLES
+    // =================================================
+
+    const variables =
+      obtenerVariables(expresion);
+
+    if (variables.length === 0) {
+
+      alert(
+        "No se detectaron variables"
+      );
+
+      return;
+    }
+
+    // 🔹 Mostrar variables
+    variablesDetectadasDiv.innerText =
+      variables.join(", ");
+
+    // 🔹 Limpiar historial
+    historialDiv.innerHTML = "";
+
+    // =================================================
+    // 🔥 GENERAR ÁRBOL
+    // =================================================
+
+    let eventos = [];
+
+    let id = 0;
+
+    function generar(
+      index,
+      parentId,
+      valores = {},
+      camino = []
+    ) {
+
+      // =============================================
+      // 🔥 CASO FINAL
+      // =============================================
+
+      if (index >= variables.length) {
+
+        // 🔹 Evaluar expresión
+        const resultado =
+          evaluarExpresion(
+            expresion,
+            valores
+          );
+          const pasosEvaluacion =
+  evaluarPasoAPaso(
+    expresion,
+    valores
+  );
+
+        // 🔹 Expresión evaluada
+        let expresionEvaluada =
+          expresion;
+
+        for (let variable in valores) {
+
+          expresionEvaluada =
+            expresionEvaluada.replaceAll(
+              variable,
+              valores[variable]
+            );
+        }
+
+        // 🔹 Nodo resultado
+        eventos.push({
+
+          id: id++,
+
+          parent: parentId,
+
+          tipo: "resultado",
+
+          estado:
+            resultado
+            ? "solucion"
+            : "fallo",
+
+          valor:
+            resultado
+            ? "✔ TRUE"
+            : "✖ FALSE",
+
+          camino: [...camino],
+
+          expresionEvaluada,
+          pasosEvaluacion
+        });
+
+        // 🔹 Guardar paso para mostrar más tarde
+        pasos.push(
+          `${resultado ? "✅" : "❌"} ${camino.join(" → ")}`
+        );
+
+        return;
+      }
+
+      // =============================================
+      // 🔹 VARIABLE ACTUAL
+      // =============================================
+
+      const variable =
+        variables[index];
+
+      // =============================================
+      // 🔹 RAMA TRUE
+      // =============================================
+
+      const idTrue = id++;
+
+      eventos.push({
+
+        id: idTrue,
+
+        parent: parentId,
+
+        tipo: "nodo",
+
+        valor: `${variable}=T`,
+
+        camino: [
+          ...camino,
+          `${variable}=T`
+        ]
+      });
+
+      pasos.push(`➡️ Probando ${variable}=TRUE`);
+
+      generar(
+
+        index + 1,
+
+        idTrue,
+
+        {
+          ...valores,
+          [variable]: true
+        },
+
+        [
+          ...camino,
+          `${variable}=T`
+        ]
+      );
+
+      // =============================================
+      // 🔹 RAMA FALSE
+      // =============================================
+
+      const idFalse = id++;
+
+      eventos.push({
+
+        id: idFalse,
+
+        parent: parentId,
+
+        tipo: "nodo",
+
+        valor: `${variable}=F`,
+
+        camino: [
+          ...camino,
+          `${variable}=F`
+        ]
+      });
+
+      pasos.push(`↩️ Retrocediendo desde ${variable}=TRUE`);
+      pasos.push(`➡️ Probando ${variable}=FALSE`);
+
+      generar(
+
+        index + 1,
+
+        idFalse,
+
+        {
+          ...valores,
+          [variable]: false
+        },
+
+        [
+          ...camino,
+          `${variable}=F`
+        ]
+      );
+    }
+
+    // =================================================
+    // 🔥 INICIAR GENERACIÓN
+    // =================================================
+
+    // =============================================
+// 🔥 CREAR RAÍZ GENERAL
+// =============================================
+
+const raizId = id++;
+
+eventos.push({
+
+  id: raizId,
+
+  parent: null,
+
+  tipo: "nodo",
+
+  valor: "INICIO",
+
+  camino: []
+});
+
+// =============================================
+// 🔥 INICIAR GENERACIÓN
+// =============================================
+
+generar(
+  0,
+  raizId
+);
+
+    // 🔹 Guardar globalmente
+    eventosGlobal = eventos;
+
+    // 🔹 Mensaje visual
+    pasoActualDiv.innerText =
+      "🌳 Árbol generado correctamente. Presiona Siguiente paso.";
+
+    btnPaso.disabled = false;
+
+    // 🔥 Enviar árbol
+    ipcRenderer.send(
+      "enviar-arbol",
+      eventos
+    );
+  }
+);
+
+// =====================================================
+// 🔹 SIGUIENTE PASO
+// =====================================================
+
+btnPaso.addEventListener(
+  "click",
+  () => {
+    if (indicePaso >= pasos.length) {
+      btnPaso.disabled = true;
+      pasoActualDiv.innerText =
+        "Historial completado.";
+      return;
+    }
+
+    const paso = pasos[indicePaso++];
+
+    historialDiv.innerHTML +=
+      `<p>${paso}</p>`;
+
+    pasoActualDiv.innerText = paso;
+
+    if (indicePaso >= pasos.length) {
+      btnPaso.disabled = true;
+      pasoActualDiv.innerText =
+        "Historial completado.";
+    }
+  }
+);
+
+// =====================================================
+// 🌳 DIBUJAR ÁRBOL
+// =====================================================
+
+btnDibujar.addEventListener(
+  "click",
+  () => {
+
+    ipcRenderer.send(
+      "abrir-arbol",
+      eventosGlobal
+    );
+  }
+);
+
+// =====================================================
+// 🔙 VOLVER
+// =====================================================
+
+btnVolver.addEventListener(
+  "click",
+  () => {
+
+    window.location.href =
+      "index.html#modulos";
+  }
+);
+
+// =====================================================
+// 🔥 OBTENER VARIABLES
+// =====================================================
+
+function obtenerVariables(
+  expresion
+) {
+
+  const matches =
+    expresion.match(/[A-Z]/g);
+
+  if (!matches) {
+
+    return [];
+  }
+
+  return [...new Set(matches)];
+}
+
+// =====================================================
+// 🔥 EVALUAR EXPRESIÓN
+// =====================================================
+
+function evaluarExpresion(
+  expresion,
+  valores
+) {
+
+  let expr = expresion;
+
+  // 🔹 Reemplazar variables
+  for (let variable in valores) {
+
+    expr =
+      expr.replaceAll(
+        variable,
+        valores[variable]
+      );
+  }
+
+  try {
+
+    return eval(expr);
+
+  } catch {
+
+    return false;
+  }
+}
+
+// =====================================================
+// 🔥 ACTUALIZAR BOTONES
+// =====================================================
+
+function actualizarBotones(
+  variables
+) {
+
+  const contenedor =
+    document.getElementById(
+      "variables"
+    );
+
+  contenedor.innerHTML = "";
+
+  variables.forEach(v => {
+
+    const btn =
+      document.createElement(
+        "button"
+      );
+
+    btn.textContent = v;
+
+    btn.onclick =
+      () => agregar(v);
+
+    contenedor.appendChild(btn);
+  });
+}
+function validarExpresion(expresion) {
+
+  // 🔹 No vacía
+  if (!expresion.trim()) {
+
+    return "La expresión está vacía";
+  }
+
+  // =================================================
+  // 🔹 PARÉNTESIS BALANCEADOS
+  // =================================================
+
+  let balance = 0;
+
+  for (let char of expresion) {
+
+    if (char === "(") balance++;
+
+    if (char === ")") balance--;
+
+    if (balance < 0) {
+
+      return "Hay un paréntesis ')' incorrecto";
+    }
+  }
+
+  if (balance !== 0) {
+
+    return "Los paréntesis están desbalanceados";
+  }
+
+  // =================================================
+  // 🔹 NO INICIAR MAL
+  // =================================================
+
+  if (
+    expresion.startsWith("&&") ||
+    expresion.startsWith("||")
+  ) {
+
+    return "La expresión no puede iniciar con AND u OR";
+  }
+
+  // =================================================
+  // 🔹 NO TERMINAR MAL
+  // =================================================
+
+  if (
+    expresion.endsWith("&&") ||
+    expresion.endsWith("||") ||
+    expresion.endsWith("!")
+  ) {
+
+    return "La expresión termina incorrectamente";
+  }
+
+  // =================================================
+  // 🔹 OPERADORES REPETIDOS
+  // =================================================
+
+  if (
+    expresion.includes("&&&&") ||
+    expresion.includes("||||")
+  ) {
+
+    return "Hay operadores repetidos";
+  }
+
+  // =================================================
+  // 🔹 DOS VARIABLES JUNTAS
+  // =================================================
+
+  if (/[A-Z]{2,}/.test(expresion)) {
+
+    return "Falta operador entre variables";
+  }
+
+  // =================================================
+  // 🔹 CARACTERES INVÁLIDOS
+  // =================================================
+
+  const permitido =
+    /^[A-Z()!&|\s]+$/;
+
+  if (!permitido.test(expresion)) {
+
+    return "Hay caracteres inválidos";
+  }
+
+  // =================================================
+  // 🔹 OPERADOR SIN VARIABLE
+  // =================================================
+
+  if (
+    /(&&\)|\|\|\))/.test(expresion)
+  ) {
+
+    return "Operador antes de ')'";
+  }
+
+  // =================================================
+  // 🔹 TODO OK
+  // =================================================
+
+  return null;
+}
+function evaluarPasoAPaso(
+  expresion,
+  valores
+) {
+
+  let pasos = [];
+
+  // 🔹 expresión original
+  let expr = expresion;
+
+  pasos.push(expr);
+
+  // =============================================
+  // 🔹 REEMPLAZAR VARIABLES
+  // =============================================
+
+  for (let variable in valores) {
+
+    expr = expr.replaceAll(
+      variable,
+      valores[variable]
+    );
+  }
+
+  pasos.push(expr);
+
+  // =============================================
+  // 🔹 EVALUAR PASO A PASO
+  // =============================================
+
+  try {
+
+    let actual = expr;
+
+    // 🔹 Mientras haya operadores
+    while (
+      actual.includes("&&") ||
+      actual.includes("||") ||
+      actual.includes("!")
+    ) {
+
+      // =========================================
+      // 🔹 NOT
+      // =========================================
+
+      actual = actual.replace(
+        /!true/g,
+        "false"
+      );
+
+      actual = actual.replace(
+        /!false/g,
+        "true"
+      );
+
+      // =========================================
+      // 🔹 AND
+      // =========================================
+
+      actual = actual.replace(
+        /true&&true/g,
+        "true"
+      );
+
+      actual = actual.replace(
+        /true&&false/g,
+        "false"
+      );
+
+      actual = actual.replace(
+        /false&&true/g,
+        "false"
+      );
+
+      actual = actual.replace(
+        /false&&false/g,
+        "false"
+      );
+
+      // =========================================
+      // 🔹 OR
+      // =========================================
+
+      actual = actual.replace(
+        /true\|\|true/g,
+        "true"
+      );
+
+      actual = actual.replace(
+        /true\|\|false/g,
+        "true"
+      );
+
+      actual = actual.replace(
+        /false\|\|true/g,
+        "true"
+      );
+
+      actual = actual.replace(
+        /false\|\|false/g,
+        "false"
+      );
+
+      // 🔹 quitar paréntesis inútiles
+      actual = actual.replace(
+        /\((true|false)\)/g,
+        "$1"
+      );
+
+      pasos.push(actual);
+
+      // 🔹 evitar loop infinito
+      if (
+        pasos.length > 20
+      ) break;
+    }
+
+    return pasos;
+
+  } catch {
+
+    return [
+      "Error al evaluar"
+    ];
+  }
+}
+</file>
+
+<file path="renderer/expresiones.html">
+
+</file>
+
+<file path="renderer/index.html">
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LABLOG</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="inicio">
+
+  <!-- 🟣 Pantalla de inicio -->
+  <div id="welcome">
+    <img src="../LABLOG.png" alt="Logo">
+    <button id="startBtn">Iniciar</button>
+  </div>
+
+  <!-- 🔵 App principal -->
+  <div id="modulos" class="hidden">
+    <div>
+      <h1>MODULOS</h1>
+    </div>
+    <container id ="contenedor_modulos"> 
+      <button id="ExpresioneS">EXPRESIONES</button>
+      <p><button id="Unificacion">UNIFICACIÓN</button></p>
+      <p><button id="backtracking">BACKTRACKING</button></p>
+    </container>
+  </div>
+
+  <!-- 🟢 BACKTRACKING -->
+<div id="pantallaBacktracking" class="hidden">
+  <h2>BACKTRACKING</h2>
+
+  <input id="lista" placeholder="Ej: 2,3,5">
+  <input id="objetivo" placeholder="Objetivo">
+
+  <button id="btnAnalizar">Analizar</button>
+  <button id="btnPaso">Siguiente paso</button>
+
+  <div id="pasoActual"></div>
+  <div id="historial"></div>
+
+  <button id="volver">⬅ Volver</button>
+</div>
+  <script src="app.js"></script>
+</body>
+</html>
+</file>
+
+<file path="renderer/modulos.js">
+
+</file>
+
+<file path="renderer/style.css">
+body {
+  margin: 0;
+  font-family: Arial;
+  color: black;
+  overflow: hidden;
+}
+body.inicio {
+ background-color: white;
+}
+/* Pantalla módulos (azul bebé) */
+body.modulos {
+  background: linear-gradient(135deg, #f2f4f8, #e6ebf2);
+}
+
+/* Pantalla de bienvenida */
+#welcome {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 1s ease;
+}
+
+#welcome img {
+  width: 750px;
+  margin-bottom: 20px;
+}
+
+#welcome button {
+  padding: 10px 25px;
+  font-size: 18px;
+  background: #1E3A5F;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  color: #FFFFFF;
+}
+/* App oculta */
+.hidden {
+  display: none;
+}
+/* Botones */
+#modulos button{
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  padding: 12px 25px;
+  font-size: 16px;
+  background: #1E3A5F;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #FFFFFF;
+  width: 200px;
+  transition: all 0.25s ease;
+}
+
+/* Hover (esto le da vida) */
+#modulos button:hover{
+  background: #2E5A8A;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+/* Contenedor principal */
+#modulos {
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  /* 🔥 CAMBIOS IMPORTANTES */
+  border: none; /* quitamos borde */
+  background-color: #FFFFFF; /* fondo limpio */
+  
+  padding: 30px;
+  width: 400px;
+  margin: 120px auto 0;
+
+  border-radius: 16px;
+
+  /* sombra más suave y moderna */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* Título */
+#modulos h1 {
+  color: #1E3A5F; /* mismo azul → coherencia */
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+/* Contenedor de botones */
+#contenedor_modulos {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* más espacio */
+  align-items: center;
+}
+#modulos button:active{
+  transform: scale(0.97);
+}
+</file>
+
+<file path="renderer/styleback.css">
+#teclado {
+  margin-top: 10px;
+}
+
+.fila {
+  margin-bottom: 5px;
+}
+
+button {
+  padding: 10px;
+  margin: 3px;
+  border-radius: 8px;
+  border: none;
+  background: #1E3A5F;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #2E5A8F;
+}
+
+#expresion {
+  width: 100%;
+  padding: 10px;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+body.backtracking {
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e6eef8, #d8e4f6 40%, #f6f9fd 100%);
+}
+
+.page-card {
+  width: min(760px, 92vw);
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 18px 55px rgba(30, 58, 95, 0.12);
+  padding: 28px 32px;
+  box-sizing: border-box;
+}
+
+.page-card h1 {
+  margin-top: 0;
+  color: #1e3a5f;
+  font-size: 30px;
+  margin-bottom: 0;
+}
+
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.info-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #d8e4f6;
+  color: #1e3a5f;
+  font-size: 18px;
+  cursor: default;
+}
+
+.info-icon:focus-visible {
+  outline: 2px solid #1e3a5f;
+  outline-offset: 3px;
+}
+
+.tooltip {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+  background: #1e3a5f;
+  color: #ffffff;
+  padding: 14px 18px;
+  border-radius: 12px;
+  white-space: normal;
+  text-align: left;
+  width: max-content;
+  max-width: 320px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  z-index: 10;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.tooltip p {
+  margin: 0;
+}
+
+.info-icon:hover .tooltip,
+.info-icon:focus .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.button-with-tooltip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-row,
+.button-row,
+.footer-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.form-row input {
+  flex: 1 1 200px;
+  min-width: 160px;
+  padding: 12px 14px;
+  border: 1px solid rgba(30, 58, 95, 0.18);
+  border-radius: 14px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-row input:focus {
+  border-color: #1e3a5f;
+  box-shadow: 0 0 0 4px rgba(30, 58, 95, 0.08);
+}
+
+.button-row button,
+.footer-row button,
+#modulos button {
+  flex: 1 1 160px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  padding: 12px 25px;
+  font-size: 16px;
+  background: #1e3a5f;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #FFFFFF;
+  transition: all 0.25s ease;
+}
+
+.button-row button:hover,
+.footer-row button:hover,
+#modulos button:hover {
+  background: #2e5a8a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.button-row button:disabled,
+.footer-row button:disabled {
+  background: #a0a0a0;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+.button-row button:disabled:hover,
+.footer-row button:disabled:hover {
+  background: #a0a0a0;
+  transform: none;
+  box-shadow: none;
+}
+
+.output-section {
+  margin-bottom: 20px;
+}
+
+#pasoActual,
+#historial {
+  min-height: 60px;
+  padding: 16px;
+  border: 1px solid rgba(30, 58, 95, 0.14);
+  border-radius: 16px;
+  background: #f8f9fb;
+  box-sizing: border-box;
+}
+
+#historial {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+#historial p {
+  margin: 8px 0;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.footer-row {
+  justify-content: flex-end;
+}
+
+.footer-row button {
+  flex: 0 0 auto;
+}
+
+/* Animación */
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+</file>
+
+</files>

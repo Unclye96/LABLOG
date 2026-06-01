@@ -3,13 +3,12 @@ body {
   font-family: Arial;
   color: black;
   overflow: hidden;
+  min-height: 100vh;
 }
-body.inicio {
- background-color: white;
-}
-/* Pantalla módulos (azul bebé) */
+
+body.inicio,
 body.modulos {
-  background: linear-gradient(135deg, #f2f4f8, #e6ebf2);
+  background: #ffffff url("../fondo.png") center center / cover no-repeat fixed;
 }
 
 /* Pantalla de bienvenida */
@@ -108,3 +107,27 @@ body.modulos {
   transform: scale(0.97);
 }
 
+.btn-salir {
+  margin-top: 24px;
+  padding: 10px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  background: #8b3a3a;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-salir:hover {
+  background: #a04444;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(139, 58, 58, 0.25);
+}
+
+.btn-salir:active {
+  transform: scale(0.97);
+}

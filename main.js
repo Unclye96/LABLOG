@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 
 let mainWindow;
 
@@ -7,6 +7,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 900,
     height: 700,
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false
@@ -22,6 +23,7 @@ ipcMain.on("abrir-arbol", (event, data) => {
   let treeWindow = new BrowserWindow({
     width: 1000,
     height: 700,
+    autoHideMenuBar: true,
 
     parent: BrowserWindow.getFocusedWindow(),
 
@@ -43,7 +45,14 @@ ipcMain.on("abrir-arbol", (event, data) => {
 
 });
 
-app.whenReady().then(createWindow);
+ipcMain.on("salir-app", () => {
+  app.quit();
+});
+
+app.whenReady().then(() => {
+  Menu.setApplicationMenu(null);
+  createWindow();
+});
   // mainWindow.webContents.openDevTools();
 
 /*ipcMain.on("enviar-arbol", (event, eventos) => {

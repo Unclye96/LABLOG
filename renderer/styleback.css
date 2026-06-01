@@ -42,6 +42,7 @@ body.backtracking {
   box-shadow: 0 18px 55px rgba(30, 58, 95, 0.12);
   padding: 28px 32px;
   box-sizing: border-box;
+  overflow: visible;
 }
 
 .page-card h1 {
@@ -56,6 +57,19 @@ body.backtracking {
   align-items: center;
   gap: 12px;
   margin-bottom: 22px;
+  overflow: visible;
+}
+
+.title-with-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  position: relative;
+}
+
+.title-with-info h1 {
+  margin: 0;
 }
 
 .info-icon {
@@ -108,6 +122,28 @@ body.backtracking {
   opacity: 1;
   visibility: visible;
   transform: translateX(-50%) translateY(0);
+}
+
+.info-icon--beside {
+  flex-shrink: 0;
+}
+
+.tooltip--title {
+  top: calc(100% + 12px);
+  left: 0;
+  right: 0;
+  transform: translateY(-6px);
+  max-width: none;
+  width: auto;
+  z-index: 100;
+}
+
+.title-with-info:has(.info-icon--beside:hover) .tooltip--title,
+.title-with-info:has(.info-icon--beside:focus) .tooltip--title,
+.title-with-info:has(.info-icon--beside:focus-visible) .tooltip--title {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 
 .button-with-tooltip {
@@ -220,3 +256,113 @@ body.backtracking {
   transition: opacity 0.3s ease;
 }
 
+/* Tabla de verdad */
+.tabla-contenedor {
+  overflow-x: auto;
+}
+
+.placeholder-text {
+  margin: 0;
+  color: rgba(30, 58, 95, 0.55);
+}
+
+.truth-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.truth-table th,
+.truth-table td {
+  border: 1px solid rgba(30, 58, 95, 0.18);
+  padding: 10px 14px;
+  text-align: center;
+}
+
+.truth-table thead th {
+  background: #1e3a5f;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.truth-table tbody tr:nth-child(even) {
+  background: #f0f4f9;
+}
+
+.truth-table tbody tr.fila-true {
+  background: rgba(46, 125, 50, 0.12);
+}
+
+.truth-table tbody tr.fila-true:nth-child(even) {
+  background: rgba(46, 125, 50, 0.18);
+}
+
+/* Unificación */
+#resultado {
+  min-height: 60px;
+}
+
+.resultado-ok {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.resultado-fallo {
+  color: #c62828;
+  font-weight: 600;
+}
+
+.ejemplos-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #1e3a5f;
+}
+
+.btn-ejemplo {
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  background: #d8e4f6 !important;
+  color: #1e3a5f !important;
+}
+
+.btn-ejemplo:hover {
+  background: #c5d4eb !important;
+}
+
+/* Programa Prolog */
+.prolog-page {
+  align-items: flex-start;
+  padding: 24px 0;
+}
+
+.page-card-wide {
+  width: min(860px, 94vw);
+}
+
+.prolog-textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 14px;
+  border: 1px solid rgba(30, 58, 95, 0.18);
+  border-radius: 14px;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.prolog-textarea:focus {
+  border-color: #1e3a5f;
+  box-shadow: 0 0 0 4px rgba(30, 58, 95, 0.08);
+}
+
+#validacion,
+#pasoActual {
+  min-height: 60px;
+}

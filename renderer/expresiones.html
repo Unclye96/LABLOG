@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Expresiones</title>
+  <link rel="stylesheet" href="styleback.css">
+</head>
+
+<body class="backtracking">
+
+  <div class="page-card">
+
+    <div class="title-row">
+      <h1>Expresiones</h1>
+
+      <span class="info-icon" tabindex="0">
+        ℹ
+        <span class="tooltip">
+          <p>
+            Construye una expresión lógica con variables booleanas (A, B, C…) y operadores AND (&&), OR (||) y NOT (!).
+          </p>
+          <p>
+            Al pulsar «Generar tabla» se evalúan todas las combinaciones posibles de valores verdadero/falso y se muestra la tabla de verdad completa.
+          </p>
+        </span>
+      </span>
+    </div>
+
+    <div class="form-row">
+      <input
+        id="expresion"
+        type="text"
+        placeholder="Construye la expresión lógica"
+      >
+    </div>
+
+    <div id="teclado">
+      <div class="fila" id="variables">
+        <button onclick="agregar('A')">A</button>
+        <button onclick="agregar('B')">B</button>
+        <button onclick="agregar('C')">C</button>
+      </div>
+
+      <div class="fila">
+        <button onclick="agregar('&&')">AND</button>
+        <button onclick="agregar('||')">OR</button>
+        <button onclick="agregar('!')">NOT</button>
+      </div>
+
+      <div class="fila">
+        <button onclick="agregar('(')">(</button>
+        <button onclick="agregar(')')">)</button>
+      </div>
+
+      <div class="fila">
+        <button onclick="borrar()">⌫</button>
+        <button onclick="limpiar()">Clear</button>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button id="generar">Generar tabla</button>
+    </div>
+
+    <div class="output-section">
+      <h3>Tabla de verdad:</h3>
+      <div id="tablaContenedor" class="output-box tabla-contenedor">
+        <p class="placeholder-text">La tabla aparecerá aquí.</p>
+      </div>
+    </div>
+
+    <div class="footer-row">
+      <button id="volver">Volver</button>
+    </div>
+
+  </div>
+
+  <script src="expresiones.js"></script>
+</body>
+</html>

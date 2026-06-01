@@ -9,6 +9,8 @@ const canvas =
 
 const ctx =
   canvas.getContext("2d");
+const viewport =
+  document.getElementById("viewport");
 const btnPlay =
   document.getElementById("btnPlay");
 
@@ -17,6 +19,25 @@ const btnPause =
 
 const btnReset =
   document.getElementById("btnReset");
+
+const btnZoomIn =
+  document.getElementById("btnZoomIn");
+
+const btnZoomOut =
+  document.getElementById("btnZoomOut");
+
+const btnZoomReset =
+  document.getElementById("btnZoomReset");
+
+const btnVolver =
+  document.getElementById("btnVolver");
+
+const zoomLabel =
+  document.getElementById("zoomLabel");
+
+const MIN_ESCALA = 0.3;
+const MAX_ESCALA = 3;
+const ZOOM_STEP = 0.15;
 
 // =====================================================
 // 🔹 VARIABLES GLOBALES
@@ -37,6 +58,9 @@ let arrastrando = false;
 
 let inicioX = 0;
 let inicioY = 0;
+let inicioPanX = 0;
+let inicioPanY = 0;
+let huboArrastre = false;
 // =====================================================
 // 🔥 CONTROL DE ANIMACIÓN
 // =====================================================
@@ -56,6 +80,70 @@ ctx.textAlign = "center";
 
 ctx.textBaseline = "middle";
 
+function resizeCanvas() {
+  canvas.width = viewport.clientWidth;
+  canvas.height = viewport.clientHeight;
+  redrawTree();
+}
+
+function actualizarZoomLabel() {
+  zoomLabel.textContent = `${Math.round(escala * 100)}%`;
+}
+
+function centrarVista() {
+  if (!raiz) {
+    offsetX = canvas.width / 2;
+    offsetY = 40;
+    return;
+  }
+
+  offsetX = canvas.width / 2 - raiz.x * escala;
+  offsetY = 60;
+}
+
+function aplicarZoom(nuevaEscala, anchorX, anchorY) {
+  const escalaLimitada = Math.max(
+    MIN_ESCALA,
+    Math.min(MAX_ESCALA, nuevaEscala)
+  );
+
+  const ratio = escalaLimitada / escala;
+
+  offsetX = anchorX - (anchorX - offsetX) * ratio;
+  offsetY = anchorY - (anchorY - offsetY) * ratio;
+  escala = escalaLimitada;
+
+  actualizarZoomLabel();
+  redrawTree();
+}
+
+function zoomIn() {
+  aplicarZoom(
+    escala + ZOOM_STEP,
+    canvas.width / 2,
+    canvas.height / 2
+  );
+}
+
+function zoomOut() {
+  aplicarZoom(
+    escala - ZOOM_STEP,
+    canvas.width / 2,
+    canvas.height / 2
+  );
+}
+
+function resetVista() {
+  escala = 1;
+  centrarVista();
+  actualizarZoomLabel();
+  redrawTree();
+}
+
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+actualizarZoomLabel();
+
 // =====================================================
 // 🔥 RECIBIR DATOS
 // =====================================================
@@ -70,7 +158,7 @@ ipcRenderer.on(
 
     asignarPosiciones(raiz);
 
-    redrawTree();
+    resetVista();
 
     // 🔥 iniciar animación
     setTimeout(() => {
@@ -153,7 +241,7 @@ function asignarPosiciones(
   if (!nodo) return;
 
   nodo.y =
-    nivel * 100 + 80;
+    nivel * 130 + 80;
 
   // 🔹 Nodo hoja
   if (nodo.hijos.length === 0) {
@@ -256,6 +344,51 @@ function dibujarArbol(nodo) {
 // 🔥 DIBUJAR NODO
 // =====================================================
 
+const NODE_RADIUS = 30;
+const LABEL_GAP = 4;
+
+function truncarAncho(texto, maxAncho) {
+  if (ctx.measureText(texto).width <= maxAncho) {
+    return texto;
+  }
+
+  let recorte = texto;
+
+  while (recorte.length > 1 && ctx.measureText(`${recorte}…`).width > maxAncho) {
+    recorte = recorte.slice(0, -1);
+  }
+
+  return `${recorte}…`;
+}
+
+function etiquetaInterior(valor) {
+  if (!valor) {
+    return "?";
+  }
+
+  if (valor.length <= 5) {
+    return valor;
+  }
+
+  if (valor.startsWith("✔") || valor.startsWith("✖")) {
+    return valor.slice(0, 1);
+  }
+
+  if (valor.startsWith("CONSULTA")) {
+    return "?";
+  }
+
+  if (valor.includes(":-")) {
+    return "R";
+  }
+
+  if (valor.startsWith("Hecho")) {
+    return "H";
+  }
+
+  return valor.slice(0, 3);
+}
+
 function dibujarNodo(nodo) {
 
   ctx.beginPath();
@@ -263,7 +396,7 @@ function dibujarNodo(nodo) {
   ctx.arc(
     nodo.x,
     nodo.y,
-    30,
+    NODE_RADIUS,
     0,
     Math.PI * 2
   );
@@ -314,28 +447,32 @@ function dibujarNodo(nodo) {
 
   ctx.strokeStyle = "#222";
 
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 2 / escala;
 
   ctx.stroke();
 
-  // 🔹 Texto
-  ctx.fillStyle = "black";
+  const texto = nodo.colapsado
+    ? `${nodo.valor} [+]`
+    : nodo.valor;
 
-  ctx.font = "13px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 11px Arial";
+  ctx.fillText(
+    etiquetaInterior(texto),
+    nodo.x,
+    nodo.y
+  );
 
-  let texto = nodo.valor;
-
-// 🔥 indicador visual
-if (nodo.colapsado) {
-
-  texto += " [+]";
-}
-
-ctx.fillText(
-  texto,
-  nodo.x,
-  nodo.y
-);
+  ctx.textBaseline = "top";
+  ctx.fillStyle = "#1a1a1a";
+  ctx.font = "11px Arial";
+  ctx.fillText(
+    truncarAncho(texto, 120),
+    nodo.x,
+    nodo.y + NODE_RADIUS + LABEL_GAP
+  );
 }
 
 // =====================================================
@@ -351,12 +488,12 @@ function dibujarLinea(
 
   ctx.moveTo(
     padre.x,
-    padre.y + 30
+    padre.y + NODE_RADIUS
   );
 
   ctx.lineTo(
     hijo.x,
-    hijo.y - 30
+    hijo.y - NODE_RADIUS
   );
 
   ctx.strokeStyle = "#555";
@@ -464,6 +601,11 @@ canvas.addEventListener(
   "click",
   (e) => {
 
+    if (huboArrastre) {
+      huboArrastre = false;
+      return;
+    }
+
     const nodo =
       detectarNodoClick(e);
 
@@ -512,7 +654,7 @@ function detectarNodoClick(e) {
         (y - nodo.y) ** 2
       );
 
-    if (distancia < 30) {
+    if (distancia < NODE_RADIUS) {
 
       return nodo;
     }
@@ -547,6 +689,10 @@ function resaltarCamino(camino) {
 
   redrawTree();
 
+  ctx.save();
+  ctx.translate(offsetX, offsetY);
+  ctx.scale(escala, escala);
+
   camino.forEach(nodo => {
 
     ctx.beginPath();
@@ -566,6 +712,8 @@ function resaltarCamino(camino) {
 
     ctx.stroke();
   });
+
+  ctx.restore();
 }
 
 // =====================================================
@@ -674,95 +822,79 @@ function mostrarInfoNodo(nodo) {
   `;
 }
 // =====================================================
-// 🔥 ZOOM CON RUEDA
+// 🔥 PAN (sin zoom con scroll)
 // =====================================================
 
-canvas.addEventListener(
+viewport.addEventListener(
   "wheel",
   (e) => {
-
     e.preventDefault();
-
-    // 🔹 zoom in/out
-    if (e.deltaY < 0) {
-
-      escala += 0.1;
-
-    } else {
-
-      escala -= 0.1;
-    }
-
-    // 🔹 límites
-    escala = Math.max(
-      0.3,
-      Math.min(escala, 3)
-    );
-
-    redrawTree();
-  }
+  },
+  { passive: false }
 );
-// =====================================================
-// 🔥 INICIAR ARRASTRE
-// =====================================================
 
-canvas.addEventListener(
+viewport.addEventListener(
   "mousedown",
   (e) => {
 
+    if (e.button !== 0) return;
+
     arrastrando = true;
+    huboArrastre = false;
+    viewport.classList.add("arrastrando");
 
-    inicioX =
-      e.clientX - offsetX;
-
-    inicioY =
-      e.clientY - offsetY;
+    inicioPanX = e.clientX;
+    inicioPanY = e.clientY;
+    inicioX = e.clientX - offsetX;
+    inicioY = e.clientY - offsetY;
   }
 );
 
-// =====================================================
-// 🔥 MOVER
-// =====================================================
-
-canvas.addEventListener(
+viewport.addEventListener(
   "mousemove",
   (e) => {
 
     if (!arrastrando) return;
 
-    offsetX =
-      e.clientX - inicioX;
+    if (
+      Math.abs(e.clientX - inicioPanX) > 4 ||
+      Math.abs(e.clientY - inicioPanY) > 4
+    ) {
+      huboArrastre = true;
+    }
 
-    offsetY =
-      e.clientY - inicioY;
+    offsetX = e.clientX - inicioX;
+    offsetY = e.clientY - inicioY;
 
     redrawTree();
   }
 );
 
-// =====================================================
-// 🔥 SOLTAR
-// =====================================================
-
-canvas.addEventListener(
+viewport.addEventListener(
   "mouseup",
   () => {
 
     arrastrando = false;
+    viewport.classList.remove("arrastrando");
   }
 );
 
-// =====================================================
-// 🔥 SALIR DEL CANVAS
-// =====================================================
-
-canvas.addEventListener(
+viewport.addEventListener(
   "mouseleave",
   () => {
 
     arrastrando = false;
+    viewport.classList.remove("arrastrando");
   }
 );
+
+btnZoomIn.addEventListener("click", zoomIn);
+btnZoomOut.addEventListener("click", zoomOut);
+btnZoomReset.addEventListener("click", resetVista);
+
+btnVolver.addEventListener("click", () => {
+  window.close();
+});
 btnPlay.addEventListener(
   "click",
   () => {

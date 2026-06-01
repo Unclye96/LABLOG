@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Programa Prolog</title>
+  <link rel="stylesheet" href="styleback.css">
+</head>
+
+<body class="backtracking prolog-page">
+
+  <div class="page-card page-card-wide">
+
+    <div class="title-row">
+      <h1>Programa Prolog</h1>
+
+      <span class="info-icon" tabindex="0">
+        ℹ
+        <span class="tooltip">
+          <p>
+            Ingresa hechos y reglas en formato Prolog (cada línea termina en punto).
+          </p>
+          <p>
+            Ejemplo de regla: abuelo(X, Z) :- padre(X, Y), padre(Y, Z).
+          </p>
+          <p>
+            Escribe una consulta y el sistema la resolverá por unificación y backtracking, mostrando cada paso del proceso.
+          </p>
+        </span>
+      </span>
+    </div>
+
+    <div class="output-section">
+      <h3>Hechos y reglas:</h3>
+      <textarea
+        id="programa"
+        class="prolog-textarea"
+        spellcheck="false"
+        placeholder="padre(juan, pedro).&#10;padre(pedro, ana).&#10;abuelo(X, Z) :- padre(X, Y), padre(Y, Z)."
+      ></textarea>
+    </div>
+
+    <div class="form-row">
+      <input
+        id="consulta"
+        type="text"
+        placeholder="?- abuelo(juan, Z)"
+      >
+    </div>
+
+    <div class="ejemplos-row">
+      <span>Ejemplo:</span>
+      <button type="button" class="btn-ejemplo" id="cargarEjemplo">
+        Familia (abuelo)
+      </button>
+    </div>
+
+    <div class="button-row">
+      <button id="validar">Validar</button>
+      <button id="ejecutar">Ejecutar consulta</button>
+      <button id="paso" disabled>Siguiente paso</button>
+    </div>
+
+    <div class="output-section">
+      <h3>Validación:</h3>
+      <div id="validacion" class="output-box">
+        Listo para validar el programa.
+      </div>
+    </div>
+
+    <div class="output-section">
+      <h3>Resultado:</h3>
+      <div id="resultado" class="output-box">
+        Ejecuta una consulta para ver el resultado.
+      </div>
+    </div>
+
+    <div class="output-section">
+      <h3>Paso actual:</h3>
+      <div id="pasoActual" class="output-box"></div>
+    </div>
+
+    <div class="output-section">
+      <h3>Historial:</h3>
+      <div id="historial" class="output-box"></div>
+    </div>
+
+    <div class="footer-row">
+      <button id="limpiar">Reiniciar</button>
+      <button id="volver">Volver</button>
+      <button id="dibujar" disabled>Ver árbol</button>
+    </div>
+
+  </div>
+
+  <script src="prolog.js"></script>
+</body>
+</html>

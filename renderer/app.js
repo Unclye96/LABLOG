@@ -1,13 +1,29 @@
+const { ipcRenderer } = require("electron");
+
 const startBtn = document.getElementById("startBtn");
 const welcome = document.getElementById("welcome");
 const modulos = document.getElementById("modulos");
 const btnBacktracking = document.getElementById("backtracking");
+const btnExpresiones = document.getElementById("ExpresioneS");
+const btnUnificacion = document.getElementById("Unificacion");
+const btnProlog = document.getElementById("Prolog");
+const btnSalir = document.getElementById("salirBtn");
+
+btnProlog.addEventListener("click", () => {
+  window.location.href = "prolog.html";
+});
 
 btnBacktracking.addEventListener("click", () => {
   window.location.href = "backtracking.html";
 });
 
+btnExpresiones.addEventListener("click", () => {
+  window.location.href = "expresiones.html";
+});
 
+btnUnificacion.addEventListener("click", () => {
+  window.location.href = "unificacion.html";
+});
 
 const showModules = () => {
   welcome.style.display = "none";
@@ -28,6 +44,6 @@ startBtn.addEventListener("click", () => {
   }, 1000);
 });
 
-const btnDibujar = document.getElementById("dibujar");
-
-
+btnSalir.addEventListener("click", () => {
+  ipcRenderer.send("salir-app");
+});

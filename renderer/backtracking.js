@@ -1,4 +1,9 @@
 const { ipcRenderer } = require("electron");
+const {
+  obtenerVariables,
+  validarExpresion,
+  evaluarExpresion
+} = require("./logicaBooleana");
 
 // =====================================================
 // 🔹 ELEMENTOS DEL DOM
@@ -440,56 +445,6 @@ btnVolver.addEventListener(
 );
 
 // =====================================================
-// 🔥 OBTENER VARIABLES
-// =====================================================
-
-function obtenerVariables(
-  expresion
-) {
-
-  const matches =
-    expresion.match(/[A-Z]/g);
-
-  if (!matches) {
-
-    return [];
-  }
-
-  return [...new Set(matches)];
-}
-
-// =====================================================
-// 🔥 EVALUAR EXPRESIÓN
-// =====================================================
-
-function evaluarExpresion(
-  expresion,
-  valores
-) {
-
-  let expr = expresion;
-
-  // 🔹 Reemplazar variables
-  for (let variable in valores) {
-
-    expr =
-      expr.replaceAll(
-        variable,
-        valores[variable]
-      );
-  }
-
-  try {
-
-    return eval(expr);
-
-  } catch {
-
-    return false;
-  }
-}
-
-// =====================================================
 // 🔥 ACTUALIZAR BOTONES
 // =====================================================
 
@@ -518,112 +473,6 @@ function actualizarBotones(
 
     contenedor.appendChild(btn);
   });
-}
-function validarExpresion(expresion) {
-
-  // 🔹 No vacía
-  if (!expresion.trim()) {
-
-    return "La expresión está vacía";
-  }
-
-  // =================================================
-  // 🔹 PARÉNTESIS BALANCEADOS
-  // =================================================
-
-  let balance = 0;
-
-  for (let char of expresion) {
-
-    if (char === "(") balance++;
-
-    if (char === ")") balance--;
-
-    if (balance < 0) {
-
-      return "Hay un paréntesis ')' incorrecto";
-    }
-  }
-
-  if (balance !== 0) {
-
-    return "Los paréntesis están desbalanceados";
-  }
-
-  // =================================================
-  // 🔹 NO INICIAR MAL
-  // =================================================
-
-  if (
-    expresion.startsWith("&&") ||
-    expresion.startsWith("||")
-  ) {
-
-    return "La expresión no puede iniciar con AND u OR";
-  }
-
-  // =================================================
-  // 🔹 NO TERMINAR MAL
-  // =================================================
-
-  if (
-    expresion.endsWith("&&") ||
-    expresion.endsWith("||") ||
-    expresion.endsWith("!")
-  ) {
-
-    return "La expresión termina incorrectamente";
-  }
-
-  // =================================================
-  // 🔹 OPERADORES REPETIDOS
-  // =================================================
-
-  if (
-    expresion.includes("&&&&") ||
-    expresion.includes("||||")
-  ) {
-
-    return "Hay operadores repetidos";
-  }
-
-  // =================================================
-  // 🔹 DOS VARIABLES JUNTAS
-  // =================================================
-
-  if (/[A-Z]{2,}/.test(expresion)) {
-
-    return "Falta operador entre variables";
-  }
-
-  // =================================================
-  // 🔹 CARACTERES INVÁLIDOS
-  // =================================================
-
-  const permitido =
-    /^[A-Z()!&|\s]+$/;
-
-  if (!permitido.test(expresion)) {
-
-    return "Hay caracteres inválidos";
-  }
-
-  // =================================================
-  // 🔹 OPERADOR SIN VARIABLE
-  // =================================================
-
-  if (
-    /(&&\)|\|\|\))/.test(expresion)
-  ) {
-
-    return "Operador antes de ')'";
-  }
-
-  // =================================================
-  // 🔹 TODO OK
-  // =================================================
-
-  return null;
 }
 function evaluarPasoAPaso(
   expresion,

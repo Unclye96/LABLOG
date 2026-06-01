@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Unificación</title>
+  <link rel="stylesheet" href="styleback.css">
+</head>
+
+<body class="backtracking">
+
+  <div class="page-card">
+
+    <div class="title-row">
+      <h1>Unificación</h1>
+
+      <span class="info-icon" tabindex="0">
+        ℹ
+        <span class="tooltip">
+          <p>
+            Introduce dos términos en estilo Prolog (variables en mayúscula, átomos en minúscula, functores compuestos).
+          </p>
+          <p>
+            El algoritmo intenta encontrar una sustitución que iguale ambos términos, mostrando cada paso del proceso.
+          </p>
+        </span>
+      </span>
+    </div>
+
+    <div class="form-row">
+      <input id="termino1" type="text" placeholder="f(X, a)">
+      <input id="termino2" type="text" placeholder="f(b, Y)">
+    </div>
+
+    <div class="button-row">
+      <button id="unificar">Unificar</button>
+    </div>
+
+    <div class="ejemplos-row">
+      <span>Ejemplos:</span>
+      <button type="button" class="btn-ejemplo" data-t1="f(X,a)" data-t2="f(b,Y)">f(X,a) + f(b,Y)</button>
+      <button type="button" class="btn-ejemplo" data-t1="X" data-t2="a">X + a</button>
+      <button type="button" class="btn-ejemplo" data-t1="f(X,X)" data-t2="f(a,b)">f(X,X) + f(a,b)</button>
+      <button type="button" class="btn-ejemplo" data-t1="X" data-t2="f(X)">Occur check</button>
+    </div>
+
+    <div class="output-section">
+      <h3>Resultado:</h3>
+      <div id="resultado" class="output-box">Introduce dos términos y pulsa Unificar.</div>
+    </div>
+
+    <div class="output-section">
+      <h3>Historial:</h3>
+      <div id="historial" class="output-box"></div>
+    </div>
+
+    <div class="footer-row">
+      <button id="volver">Volver</button>
+    </div>
+
+  </div>
+
+  <script src="unificacion.js"></script>
+</body>
+</html>
