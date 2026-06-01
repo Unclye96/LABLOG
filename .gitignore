@@ -1,6 +1,41 @@
+# Dependencias
 node_modules/
+
+# Build de Electron / electron-builder
 dist/
 out/
+build/icon.ico
+
+# Logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Variables de entorno
+.env
+.env.*
+!.env.example
+
+# Sistema operativo
 .DS_Store
 Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# Editores e IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Herramientas / artefactos generados
+repomix-output.xml
+repomix-output.*
+
+# Archivos temporales locales
+*.tmp
+*.temp
+Untitled

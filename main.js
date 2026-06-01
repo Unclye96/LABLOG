@@ -1,4 +1,16 @@
 const { app, BrowserWindow, ipcMain, Menu } = require('electron');
+const path = require('path');
+
+const APP_ICON = path.join(__dirname, 'LABLOG icono blanco.png');
+
+const windowOptions = {
+  autoHideMenuBar: true,
+  icon: APP_ICON,
+  webPreferences: {
+    nodeIntegration: true,
+    contextIsolation: false
+  }
+};
 
 let mainWindow;
 
@@ -7,11 +19,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 900,
     height: 700,
-    autoHideMenuBar: true,
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false
-    }
+    ...windowOptions
   });
 
   mainWindow.loadFile('renderer/index.html');
@@ -23,16 +31,9 @@ ipcMain.on("abrir-arbol", (event, data) => {
   let treeWindow = new BrowserWindow({
     width: 1000,
     height: 700,
-    autoHideMenuBar: true,
-
     parent: BrowserWindow.getFocusedWindow(),
-
     modal: true,
-
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false
-    }
+    ...windowOptions
   });
 
   treeWindow.loadFile("renderer/arbol.html");

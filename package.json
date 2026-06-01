@@ -1,14 +1,38 @@
 {
-  "name": "mi-app-electron",
+  "name": "lablog",
   "version": "1.0.0",
   "description": "App de lógica con interfaz wow",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "prebuild": "node scripts/generate-icon.js",
+    "build": "electron-builder --win portable"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^30.0.0"
+    "electron": "^30.0.0",
+    "electron-builder": "^25.1.8",
+    "png-to-ico": "^2.1.8"
+  },
+  "build": {
+    "appId": "com.lablog.app",
+    "productName": "LABLOG",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "renderer/**/*",
+      "*.png",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "icon": "build/icon.ico",
+      "signAndEditExecutable": false
+    }
   }
 }
