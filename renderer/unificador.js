@@ -5,7 +5,14 @@ function parseTerm(str) {
     throw new Error("Término vacío");
   }
 
-  return parseTermAt(input, 0).term;
+  const { term, pos } = parseTermAt(input, 0);
+  const end = skipSpaces(input, pos);
+
+  if (end < input.length) {
+    throw new Error(`Texto sobrante después del término: '${input.slice(end)}'`);
+  }
+
+  return term;
 }
 
 function parseTermAt(input, pos) {
@@ -116,15 +123,9 @@ function parseAtomOrCompound(input, pos) {
 
   pos++;
 
-  const trailing = skipSpaces(input, pos);
-
-  if (trailing < input.length) {
-    throw new Error(`Texto sobrante después del término: '${input.slice(trailing)}'`);
-  }
-
   return {
     term: { type: "compound", functor, args },
-    pos: trailing
+    pos: skipSpaces(input, pos)
   };
 }
 
